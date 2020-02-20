@@ -352,7 +352,7 @@ function App () {
   useEffect(() => {
     if (province) {
       // window.document.title = `新冠疫情实时地图 | ${province.name}`
-      window.document.title = `新冠疫情实时数据360导航`
+      window.document.title = `实时地图`
     }
   }, [province])
 
@@ -375,12 +375,38 @@ function App () {
   return (
     <div>
       <Header province={province} />
-      <StatIncr modifyTime={all.modifyTime}/>
-      {/* <WingBlank> */}
-        {/* <Carousel
-            autoplay={false}
-            infinite
-        > */}
+      {/* 实时数据 */}
+      <StatIncr modifyTime={all.modifyTime}/> 
+
+        {/* 地图 */}
+        <div className="card" id="Map">
+        <h2>疫情地图 { province ? `· ${province.name}` : "(点击省市查看详情)" }
+        {
+          province ? <small
+            onClick={() => setProvince(null)}
+          >返回全国</small> : null
+        }
+        </h2>
+        {/* <h3>点击省市查看详情</h3> */}
+        <Stat { ...overall } name={province && province.name} modifyTime={all.modifyTime} />
+        <Suspense fallback={<div className="loading">地图正在加载中...</div>}>
+          <Map province={province} data={data} onClick={name => {
+            const p = provincesByName[name]
+            if (p) {
+              setProvince(p)
+            }
+          }} />
+          {/*
+            province ? false :
+              <div className="tip">
+                在地图中点击省份可跳转到相应省份的疫情地图，并查看该省相关的实时动态
+              </div>
+          */ }
+        </Suspense>
+        <Area area={area} onChange={setProvince} />
+      </div>
+
+      {/* 趋势 */}
         <div className="card">
         <h2>全国</h2>
             {all.quanguoTrendChart.map(n => (
@@ -410,32 +436,13 @@ function App () {
         {/* </Carousel> */}
       {/* </WingBlank> */}
       
-      <div className="card" id="Map">
-        <h2>疫情地图 { province ? `· ${province.name}` : "(点击省市查看详情)" }
-        {
-          province ? <small
-            onClick={() => setProvince(null)}
-          >返回全国</small> : null
-        }
-        </h2>
-        {/* <h3>点击省市查看详情</h3> */}
-        <Stat { ...overall } name={province && province.name} modifyTime={all.modifyTime} />
-        <Suspense fallback={<div className="loading">地图正在加载中...</div>}>
-          <Map province={province} data={data} onClick={name => {
-            const p = provincesByName[name]
-            if (p) {
-              setProvince(p)
-            }
-          }} />
-          {/*
-            province ? false :
-              <div className="tip">
-                在地图中点击省份可跳转到相应省份的疫情地图，并查看该省相关的实时动态
-              </div>
-          */ }
-        </Suspense>
-        <Area area={area} onChange={setProvince} />
+      {/* 定位 */}
+      <div className="card">
+        <h2 id="local">周边疫情</h2>
       </div>
+      <iframe src="https://map.sogou.com/m/shouji4/page/emap/?_=0.8058073278712437" width="100%" height="500px" frameBorder="0"></iframe>
+      
+      {/* 预测 */}
       <div className="card" id="Predict">
         <h2> 疫情预测（确诊趋势）· 近期</h2>
         <div height="250px">
@@ -472,16 +479,14 @@ function App () {
                      }}/>
                      <WingBlank /></div>
       </div>
-      <div className="card">
-        <h2 id="local">周边疫情</h2>
-      </div>
-      <iframe src="https://map.sogou.com/m/shouji4/page/emap/?_=0.8058073278712437" width="100%" height="500px" frameBorder="0"></iframe>
+      
+      {/* 动态 */}
       <News province={province} />
-      <Toutiao />
-      <Policys />
-      <Summary />
-      <Resource />
-      <About />
+      {/* <Toutiao /> */}
+      {/* <Policys /> */}
+      {/* <Summary /> */}
+      {/* <Resource /> */}
+      {/* <About /> */}
       <div className="card info">
       <h2 id="Disclaimer">免责声明</h2>
       <List>

@@ -26,7 +26,7 @@ const MainFab = styled(Fab)`
     transition: transform 0.15s ease-out !important;
     background-color:#40a9ff;
 `
-const ActionButton = (props) => <StyledFab color={"primary"} size={"small"} style={{ margin: "0.1rem" }} hide={props.hide}>
+const ActionButton = (props) => <StyledFab color={"primary"} size={"middle"} style={{ margin: "0.1rem" }} hide={props.hide}>
     <a href={props.href}>
         {props.name}
     </a>
@@ -37,16 +37,16 @@ const ActionButton = (props) => <StyledFab color={"primary"} size={"small"} styl
 export default function Index(props) {
     const [expanded, setExpanded] = useState(true)
     const NavItems = [
-        ["趋势", "#Incr"],
         ["地图", "#Map"],
+        ["趋势", "#Incr"],
         ["定位", "#local"],
         ["预测", "#Predict"],
-        ["同乘", "#Trip"],
+        // ["同乘", "#Trip"],
         ["动态", "#News"],
-        ["头条", "#Toutiao"],
-        ["讯息", "#Summary"],
-        ["政策", "#Policy"],
-        ["资源", "#Resource"],
+        // ["头条", "#Toutiao"],
+        // ["讯息", "#Summary"],
+        // ["政策", "#Policy"],
+        // ["资源", "#Resource"],
         // ["关于", "#About"],
         // ["免责", "#Disclaimer"],
         // ["反馈", "#Fallback"],
