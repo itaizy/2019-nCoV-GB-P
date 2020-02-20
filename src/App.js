@@ -318,7 +318,7 @@ function Area ({ area, onChange }) {
 function Header ({ province }) {
   return (
     <header>
-      <img src={require("./noprovince-small3.jpg")} width="100%"/>
+      {/* <img src={require("./noprovince-small3.jpg")} width="100%"/> */}
 
       {/* <div className="bg"></div> */}
       {/* <h1> */}
@@ -487,7 +487,7 @@ function App () {
       {/* <Summary /> */}
       {/* <Resource /> */}
       {/* <About /> */}
-      <div className="card info">
+      {/* <div className="card info">
       <h2 id="Disclaimer">免责声明</h2>
       <List>
         <Item multipleLine={true} wrap={true} >
@@ -500,7 +500,7 @@ function App () {
       </List>
       </div>
       <Callback />
-      <Fallback />
+      <Fallback /> */}
       <NavFab/>
     </div>
   );
