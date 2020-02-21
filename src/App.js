@@ -410,10 +410,10 @@ function App () {
       </div>
 
       {/* 趋势 */}
-        <div className="card">
+        <div className="card" id='Trends'>
         <h2>全国</h2>
-            {all.quanguoTrendChart.map(n => (
-              <div>
+            {all.quanguoTrendChart.map(n => (              
+              <div key={n.title}>
                 <img src={require('./images/' + n.imgUrl.split('/')[n.imgUrl.split('/').length - 1])}
                      alt=""
                     //  style={{ width: '100%', verticalAlign: 'top' }}
@@ -422,10 +422,11 @@ function App () {
                          // fire window resize event to change height
                          window.dispatchEvent(new Event('resize'));
                      }}/>
-                     <WingBlank /></div>))}
+                     <WingBlank />
+              </div>))}
           <h2>湖北/非湖北</h2>
             {all.hbFeiHbTrendChart.map(n => (
-              <div>
+              <div key={n.title}>
                 <img src={require('./images/' + n.imgUrl.split('/')[n.imgUrl.split('/').length - 1])}
                      alt=""
                     //  style={{ width: '100%', verticalAlign: 'top' }}

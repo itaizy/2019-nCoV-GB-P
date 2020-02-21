@@ -26,7 +26,7 @@ const MainFab = styled(Fab)`
     transition: transform 0.15s ease-out !important;
     background-color:#40a9ff;
 `
-const ActionButton = (props) => <StyledFab color={"primary"} size={"middle"} style={{ margin: "0.1rem" }} hide={props.hide}>
+const ActionButton = (props) => <StyledFab color={"primary"} size={"medium"} style={{ margin: "0.1rem" }} hide={props.hide}>
     <a href={props.href}>
         {props.name}
     </a>
@@ -62,7 +62,7 @@ export default function Index(props) {
             {List.map((E, idx) => <E hide={!expanded} key={idx} />)}
             <MainFab
                 size={"medium"}
-                expand={expanded}
+                expand={expanded ? 1:0}
                 onClick={() => setExpanded(e => !e)}
             ><AddIcon /></MainFab>
         </Root>
