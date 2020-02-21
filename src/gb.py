@@ -69,8 +69,8 @@ f = open('data/img4gb.json', 'w', encoding='utf-8')
 json.dump(img4gb, f)
 f.close()
 
-val = os.system('cp -r images/ ../build/ncov')
-val = os.system('cp data/qg4gb.json ../build/ncov')
-val = os.system('cp data/hb4gb.json ../build/ncov')
-val = os.system('cp data/img4gb.json ../build/ncov')
+val = os.system('cp -r images/ ../build/gb')
+val = os.system('cp data/qg4gb.json ../build/gb')
+val = os.system('cp data/hb4gb.json ../build/gb')
+val = os.system('cp data/img4gb.json ../build/gb')
 
