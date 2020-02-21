@@ -38,7 +38,8 @@ export default function Index(props) {
     const [expanded, setExpanded] = useState(true)
     const NavItems = [
         ["地图", "#Map"],
-        ["趋势", "#Incr"],
+        // ["趋势", "#Incr"],
+        ["趋势", "#Trends"],
         ["定位", "#local"],
         ["预测", "#Predict"],
         // ["同乘", "#Trip"],

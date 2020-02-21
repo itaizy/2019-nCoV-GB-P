@@ -44,7 +44,9 @@ f = open('data/hb4gball.json',encoding='utf-8')
 hball = json.load(f)
 f.close()
 f = open('data/hb4gb.json', 'w', encoding='utf-8')
-json.dump([k for k in sorted(hball['data'], key=lambda item:item['date'], reverse=True)][0], f)
+hbdata = [k for k in sorted(hball['data'], key=lambda item:item['date'], reverse=True)][0]
+hbdata['suspected_add'] = 1269
+json.dump(hbdata, f)
 f.close()
 
 
