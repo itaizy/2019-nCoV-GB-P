@@ -10,6 +10,7 @@ import policy from './data/zc_new'
 import NavFab from "./component/NavFab"
 import predictData from './data/predictData'
 import n163 from './data/n163'
+import hbdata from './data/hb4gb'
 
 // import Carousel from 'antd-mobile/lib/carousel';  // 加载 JS
 import 'antd-mobile/lib/carousel/style/css';        // 加载 CSS
@@ -226,7 +227,7 @@ function Stat ({ modifyTime, confirmedCount, suspectedCount, deadCount, curedCou
         <Tag number={confirmedCount} className="numberconfirmed">
           确诊
         </Tag>
-        <Tag number={suspectedCount || '-'} className="number">
+        <Tag number={name=='湖北'?hbdata['suspected']:suspectedCount || '-'} className="number">
           疑似
         </Tag>
         <Tag number={deadCount} className="dead">
