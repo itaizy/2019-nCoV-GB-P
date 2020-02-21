@@ -335,18 +335,19 @@ function Header ({ province }) {
 }
 
 function App () {
-  const [province, _setProvince] = useState(null)
+  const [province, _setProvince] = useState(provincesByName['湖北'])
   const setProvinceByUrl = () => {
     const p = window.location.pathname.slice(1)
     _setProvince(p ? provincesByPinyin[p] : null)
   }
 
   useEffect(() => {
-    setProvinceByUrl()
-    window.addEventListener('popstate', setProvinceByUrl)
-    return () => {
-      window.removeEventListener('popstate', setProvinceByUrl)
-    }
+
+    // setProvinceByUrl()
+    // window.addEventListener('popstate', setProvinceByUrl)
+    // return () => {
+    //   window.removeEventListener('popstate', setProvinceByUrl)
+    // }
   }, [])
 
   useEffect(() => {
@@ -392,6 +393,8 @@ function App () {
         <Suspense fallback={<div className="loading">地图正在加载中...</div>}>
           <Map province={province} data={data} onClick={name => {
             const p = provincesByName[name]
+            console.log(name)
+            console.log(p)
             if (p) {
               setProvince(p)
             }
