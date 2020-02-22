@@ -3,30 +3,13 @@ import keyBy from 'lodash.keyby'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { Carousel, WingBlank, List, Card, WhiteSpace } from 'antd-mobile';
 import all from './data/overall'
 import provinces from './data/area'
-import policy from './data/zc_new'
 import NavFab from "./component/NavFab"
 import predictData from './data/predictData'
-import n163 from './data/n163'
 import hbdata from './data/hb4gb'
 
-// import Carousel from 'antd-mobile/lib/carousel';  // 加载 JS
-import 'antd-mobile/lib/carousel/style/css';        // 加载 CSS
-// import WingBlank from 'antd-mobile/lib/wing-blank';  // 加载 JS
-import 'antd-mobile/lib/wing-blank/style/css';        // 加载 CSS
-// import List from 'antd-mobile/lib/list';  // 加载 JS
-import 'antd-mobile/lib/list/style/css';        // 加载 CSS
-import 'antd-mobile/lib/card/style/css';        // 加载 CSS
-import 'antd-mobile/lib/white-space/style/css';        // 加载 CSS
-
-// import { Fab, Action } from 'react-tiny-fab';
-// import 'react-tiny-fab/dist/styles.css';
-// import React from 'react'
-
 import Tag from './Tag'
-import Person from './person'
 
 import './App.css'
 import axios from 'axios'
@@ -39,10 +22,6 @@ const Map = React.lazy(() => import('./Map'))
 const Predict = React.lazy(() => import('./Predict'))
 
 const provincesByName = keyBy(provinces, 'name')
-const provincesByPinyin = keyBy(provinces, 'pinyin')
-
-const Item = List.Item;
-const Brief = Item.Brief;
 
 const fetcher = (url) => axios(url).then(data => {
   return data.data.data
@@ -83,133 +62,6 @@ function News ({ province }) {
           .map(n => <New {...n} key={n.id} />)
       }
       <div className="more" onClick={() => { setLen() }}>点击查看全部动态</div>
-    </div>
-  )
-}
-
-function Toutiao () {
-  const [len, setLen] = useState(8)
-  const n163news = n163.T1348647853363
-
-  return (
-  
-    <div className="card">
-      <h2 id="Toutiao">头条新闻</h2>
-      {
-        n163news
-          .slice(0, len)
-          .map(n => <div>
-            <Card>
-            <Card.Header
-              title={n.title}
-            />
-            <Card.Body>
-              <div><a href={n.url}><img src={n.imgsrc} width="100%"></img></a></div>
-            </Card.Body>
-            <Card.Footer content={n.mtime} extra={<div>回复：{n.replyCount}</div>} />
-          </Card>
-          <WhiteSpace size="lg" />
-          </div>)
-      }
-      <div className="more" onClick={() => { setLen() }}>点击查看全部动态</div>
-    </div>
-  )
-}
-
-function OnePolicy ({ title, content, url, time, publisher, location }) {
-  return (
-    <div className="new">
-      <div className="new-date">
-        <div className="relative">
-            {location}
-        </div>
-        {time}
-      </div>
-      <a className="title" href={url}>{ title }</a>
-      <div className="summary">{ content.slice(0, 100) }...</div>
-      <div className="relative-right">
-          {publisher}
-      </div>
-    </div>
-  )
-}
-
-function Policys () {
-  const [len, setLen] = useState(8)
-  // const [news, setNews] = useState([])
-
-  return (
-    <div className="card">
-      <h2 id="Policy">政策扶持</h2>
-      {
-        policy
-        .slice(0, len)
-        .map(n => <OnePolicy {...n} key={n.index}/>)
-      }
-      <div className="more" onClick={() => { setLen() }}>点击查看全部动态</div>
-    </div>
-  )
-}
-
-function Summary () {
-  return (
-    <div>
-    <div className="card info">
-      <h2 id="Summary">资讯汇总</h2>
-      <List>
-        <Item id="Trip" arrow="horizontal" thumb={require('./icon/Search.png')} onClick={() => {window.location.href="http://2019ncov.nosugartech.com/"}}>同乘 | 确诊患者同行查询工具</Item>
-        <Item id="Trip" arrow="horizontal" thumb={require('./icon/Fake.png')} onClick={() => {window.location.href="https://vp.fact.qq.com/home"}}>辟谣 | 新型冠状病毒实时辟谣</Item>
-        <Item id="Trip" arrow="horizontal" thumb={require('./icon/Help.png')} onClick={() => {window.location.href="https://promo.guahao.com/topic/pneumonia"}}>救助 | 微医抗击疫情实时救助</Item>
-        <Item id="Trip" arrow="horizontal" thumb={require('./icon/bh.jpg')} onClick={() => {window.location.href="http://www.ncov-report.com/"}}>预测 | 疫情评估与预测报告-北航</Item>
-        <Item id="Trip" arrow="horizontal" thumb={require('./icon/Time.png')} onClick={() => {window.location.href="https://m.yangshipin.cn/static/2020/c0126.html"}}>疫情24小时 | 与疫情赛跑</Item>
-        <Item id="Trip" arrow="horizontal" thumb={require('./icon/Tencent.png')} onClick={() => {window.location.href="https://news.qq.com/zt2020/page/feiyan.htm"}}>腾讯新闻新冠疫情实时动态</Item>
-        <Item id="Trip" arrow="horizontal" thumb={require('./icon/Ding.png')} onClick={() => {window.location.href="https://3g.dxy.cn/newh5/view/pneumonia"}}>丁香园新冠疫情实时动态</Item>
-
-        <Item id="Trip" arrow="horizontal" thumb={require('./icon/tinghua.jpg')} onClick={() => {window.location.href="http://ncov.deepeye.tech/"}}>疫情可视化分析-清华</Item>
-        <Item id="Trip" arrow="horizontal" thumb={require('./icon/pku.jpg')} onClick={() => {window.location.href="http://vis.pku.edu.cn/ncov/"}}>疫情可视化分析-北大</Item>
-      </List>
-    </div>
-    </div>
-  )
-}
-
-function Resource () {
-  return (
-    <div className="card info">
-      <h2 id="Resource">抗疫资源</h2>
-      <List>
-        <Item id="Trip" arrow="horizontal" thumb={require('./icon/Tel.png')} onClick={() => {window.location.href="https://mp.weixin.qq.com/s/IQaSZxNirg-mIXCNTG-lTw"}}>口罩 | 全国各省市口罩生产商联系方式</Item>
-        <Item id="Trip" arrow="horizontal" thumb={require('./icon/Tel.png')} onClick={() => {window.location.href="https://mp.weixin.qq.com/s/15-240GSr8T-Hnbh3bNUsQ"}}>测温 | 全国部分额温枪，红外测温仪厂家联系方式！</Item>
-      </List>
-    </div>
-  )
-}
-
-function About () {
-  return (
-    <div className="card info">
-      <h2 id="About">关于我们</h2>
-      <List>
-        <Item id="Trip" arrow="horizontal" thumb={require('./icon/bdbc.png')} multipleLine={true} wrap={true} onClick={() => {window.location.href="http://bdbc.buaa.edu.cn/"}}>北京市大数据科学与脑机智能高精尖创新中心(BDBC)</Item>
-        <Item id="Trip" arrow="horizontal" thumb={require('./icon/DQ.png')} wrap={true}  onClick={() => {window.location.href="https://rse.buaa.edu.cn/plus/view.php?aid=117"}}>北航复杂系统可靠性实验室李大庆教授团队</Item>
-      </List>
-      <img src={require('./images/wxgzh.jpg')} width="100%"></img>
-      {/* <li><a href="http://bdbc.buaa.edu.cn/">北京市大数据科学与脑机智能高精尖创新中心(BDBC)</a></li> */}
-      {/* <li><a href="https://rse.buaa.edu.cn/plus/view.php?aid=117">北航可靠性与系统工程学院李大庆课题组</a></li> */}
-      {/* <a href="http://act.buaa.edu.cn/lijx/"><Person Icon="http://act.buaa.edu.cn/lijx/pics/lijx.JPG" Name="李建欣" Title="教授" Organization="计算机学院"/></a> */}
-      {/* <a href="https://rse.buaa.edu.cn/plus/view.php?aid=117"><Person Icon="https://rse.buaa.edu.cn/uploads/150919/1-1509191GT43J.jpg" Name="李大庆" Title="研究员" Organization="可靠性与系统工程学院"/></a> */}
-    </div>
-  )
-}
-
-function Callback () {
-  return (
-    <div className="card info">
-      <h2>意见反馈</h2>
-      <List>
-        <Item id="Trip" arrow="horizontal" thumb={require('./icon/Mail.png')} onClick={() => {window.location.href="mailto:itaizy@163.com;taizy@act.buaa.edu.cn;yusc@act.buaa.edu.cn"}}>发送邮件</Item>
-      </List>
-      {/* <li><a href="mailto:itaizy@163.com;taizy@act.buaa.edu.cn;yusc@act.buaa.edu.cn">发送邮件</a></li> */}
     </div>
   )
 }
@@ -271,16 +123,6 @@ function StatIncr ({ modifyTime}) {
   )
 }
 
-function Fallback () {
-  return (
-    <div id="Fallback" className="fallback">
-      <div>
-        特别鸣谢: <a href="https://github.com/shfshanyue">shfshanyue</a>
-      </div>
-    </div>
-  )
-}
-
 function Area ({ area, onChange }) {
   const renderArea = () => {
     return area.map(x => (
@@ -337,19 +179,6 @@ function Header ({ province }) {
 
 function App () {
   const [province, _setProvince] = useState(provincesByName['湖北'])
-  const setProvinceByUrl = () => {
-    const p = window.location.pathname.slice(1)
-    _setProvince(p ? provincesByPinyin[p] : null)
-  }
-
-  useEffect(() => {
-
-    // setProvinceByUrl()
-    // window.addEventListener('popstate', setProvinceByUrl)
-    // return () => {
-    //   window.removeEventListener('popstate', setProvinceByUrl)
-    // }
-  }, [])
 
   useEffect(() => {
     if (province) {
@@ -400,12 +229,6 @@ function App () {
               setProvince(p)
             }
           }} />
-          {/*
-            province ? false :
-              <div className="tip">
-                在地图中点击省份可跳转到相应省份的疫情地图，并查看该省相关的实时动态
-              </div>
-          */ }
         </Suspense>
         <Area area={area} onChange={setProvince} />
       </div>
@@ -423,7 +246,6 @@ function App () {
                          // fire window resize event to change height
                          window.dispatchEvent(new Event('resize'));
                      }}/>
-                     <WingBlank />
               </div>))}
           <h2>湖北/非湖北</h2>
             {all.hbFeiHbTrendChart.map(n => (
@@ -436,7 +258,7 @@ function App () {
                          // fire window resize event to change height
                          window.dispatchEvent(new Event('resize'));
                      }}/>
-                     <WingBlank /></div>))}
+                     </div>))}
                      </div>
         {/* </Carousel> */}
       {/* </WingBlank> */}
@@ -464,48 +286,29 @@ function App () {
                      onLoad={() => {
                          window.dispatchEvent(new Event('resize'));
                      }}/>
-                     <WingBlank /></div>
+                     </div>
         <div>
           <img src={require('./images/p_all.png')} alt="" style={{ width: '100%'}}
                      onLoad={() => {
                          window.dispatchEvent(new Event('resize'));
                      }}/>
-                     <WingBlank /></div>
+                     </div>
         <div>
           <img src={require('./images/p_hb.png')} alt="" style={{ width: '100%'}}
                      onLoad={() => {
                          window.dispatchEvent(new Event('resize'));
                      }}/>
-                     <WingBlank /></div>
+                     </div>
         <div>
           <img src={require('./images/p_wh.png')} alt="" style={{ width: '100%'}}
                      onLoad={() => {
                          window.dispatchEvent(new Event('resize'));
                      }}/>
-                     <WingBlank /></div>
+                     </div>
       </div>
       
       {/* 动态 */}
       <News province={province} />
-      {/* <Toutiao /> */}
-      {/* <Policys /> */}
-      {/* <Summary /> */}
-      {/* <Resource /> */}
-      {/* <About /> */}
-      {/* <div className="card info">
-      <h2 id="Disclaimer">免责声明</h2>
-      <List>
-        <Item multipleLine={true} wrap={true} >
-          <div style={{border:'1px solid #000'}}>
-            <p className="title">
-              &nbsp;&nbsp;&nbsp;&nbsp;本系统基于公开数据完成，分析与预测结果仅供研究参考，非官方结论，发布者不对报告结果和结论准确性负责。
-            </p>
-          </div>
-        </Item>
-      </List>
-      </div>
-      <Callback />
-      <Fallback /> */}
       <NavFab/>
     </div>
   );
