@@ -11,6 +11,8 @@ import hbdata from './data/hb4gb'
 
 import Tag from './Tag'
 
+import Map from './Map'
+
 import './App.css'
 import axios from 'axios'
 import TotalTag from "./TotalTag";
@@ -18,7 +20,9 @@ import TotalTag from "./TotalTag";
 
 dayjs.extend(relativeTime)
 
-const Map = React.lazy(() => import('./Map'))
+// import Map from './Map'
+
+// const Map = React.lazy(() => import('./Map'))
 const Predict = React.lazy(() => import('./Predict'))
 
 const provincesByName = keyBy(provinces, 'name')
@@ -161,18 +165,6 @@ function Area ({ area, onChange }) {
 function Header ({ province }) {
   return (
     <header>
-      {/* <img src={require("./noprovince-small3.jpg")} width="100%"/> */}
-
-      {/* <div className="bg"></div> */}
-      {/* <h1> */}
-        {/* <small>新冠</small> */}
-        {/* <br /> */}
-        {/* 新冠疫情动态 · { province ? province.name : '全国' } */}
-      {/* </h1> */}
-      {/* <div> */}
-        {/* <a href="http://bdbc.buaa.edu.cn/">By BDBC</a> */}
-      {/* </div> */}
-      { /* <i>By ACTBigData in BDBC</i> */}
     </header>
   )
 }
@@ -220,16 +212,14 @@ function App () {
         </h2>
         {/* <h3>点击省市查看详情</h3> */}
         <Stat { ...overall } name={province && province.name} modifyTime={all.modifyTime} />
-        <Suspense fallback={<div className="loading">地图正在加载中...</div>}>
+        {/* <Suspense fallback={<div className="loading">地图正在加载中...</div>}> */}
           <Map province={province} data={data} onClick={name => {
             const p = provincesByName[name]
-            console.log(name)
-            console.log(p)
             if (p) {
               setProvince(p)
             }
           }} />
-        </Suspense>
+        {/* </Suspense> */}
         <Area area={area} onChange={setProvince} />
       </div>
 

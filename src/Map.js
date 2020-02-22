@@ -4,6 +4,7 @@ import echarts from 'echarts/lib/echarts'
 
 import 'echarts/lib/chart/map'
 import 'echarts/lib/component/visualMap'
+import 'echarts/map/json/province/hubei.json'
 
 function Map ({ province, data, onClick }) {
   const [loading, setLoading] = useState(true)
@@ -11,10 +12,10 @@ function Map ({ province, data, onClick }) {
   useEffect(() => {
     setLoading(true)
     if (province) {
-      import(`echarts/map/json/province/${province.pinyin}.json`).then(map => {
-        echarts.registerMap(province.pinyin, map.default)
-        setLoading(false)
-      })
+        import(`echarts/map/json/province/${province.pinyin}.json`).then(map => {
+          echarts.registerMap(province.pinyin, map.default)
+          setLoading(false)
+        })
     } else {
       import(`echarts/map/json/china.json`).then(map => {
         echarts.registerMap('china', map.default)
@@ -91,11 +92,11 @@ function Map ({ province, data, onClick }) {
     }
   }
   return (
-    loading ? <div className="loading">地图正在加载中...</div> :
+    // loading ? <div className="loading">地图正在加载中...</div> :
     <ReactEcharts
       echarts={echarts}
       option={getOption()}
-      lazyUpdate={true}
+      lazyUpdate={false}
       onEvents={{
         click (e) {
           onClick(e.name)
