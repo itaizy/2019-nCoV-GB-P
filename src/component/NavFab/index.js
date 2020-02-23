@@ -27,7 +27,7 @@ const MainFab = styled(Fab)`
     background-color:#40a9ff;
 `
 const ActionButton = (props) => <StyledFab color={"primary"} size={"medium"} style={{ margin: "0.1rem" }} hide={props.hide}>
-    <a href={props.href}>
+    <a href={props.href} onClick={() => {window.location.replace(window.location.href.toString().replace(window.location.hash, '')+props.href)}}>
         {props.name}
     </a>
 </StyledFab>
@@ -54,6 +54,7 @@ export default function Index(props) {
     ]
 
     const List = useMemo(() => NavItems.map(([name, link]) => ({ hide }) => (<ActionButton name={name} href={link} key={name} hide={hide} />)), [])
+    // const List = useMemo(() => NavItems.map(([name, link]) => ({ hide }) => (<ActionButton name={name} onclick={() => alert('j')} key={name} hide={hide} />)), [])
 
 
 
