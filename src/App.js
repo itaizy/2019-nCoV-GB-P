@@ -195,6 +195,17 @@ function App () {
   const area = province ? provincesByName[province.name].cities : provinces
   const overall = province ? province : all
 
+  const BMap = window.BMap;
+  const myCity = new BMap.LocalCity();
+
+  myCity.get(function (result) {
+    // console.log(result.name);          //城市名称
+    if (result.name) {
+      alert(result.name)
+    }
+});
+  
+
   return (
     <div>
       <Header province={province} />
