@@ -171,6 +171,7 @@ function Header ({ province }) {
 
 function App () {
   const [province, _setProvince] = useState(provincesByName['湖北'])
+  const [userLocation, _setUserLocation] = useState(true)
 
   useEffect(() => {
     if (province) {
@@ -195,15 +196,26 @@ function App () {
   const area = province ? provincesByName[province.name].cities : provinces
   const overall = province ? province : all
 
-  const BMap = window.BMap;
-  const myCity = new BMap.LocalCity();
 
-  myCity.get(function (result) {
-    // console.log(result.name);          //城市名称
-    if (result.name) {
-      alert(result.name)
-    }
-});
+  const citylist = ['武汉市','黄石市','十堰市','宜昌市','襄阳市','鄂州市','荆门市','孝感市','荆州市','黄冈市','咸宁市','随州市','恩施土家族苗族自治州仙桃市','潜江市','天门市','神农架林区']
+
+  useEffect(() => {
+    const BMap = window.BMap;
+    const myCity = new BMap.LocalCity();
+
+    myCity.get(function (result) {
+      // console.log(result.name);          //城市名称
+        if (result.name) {
+          if (citylist.indexOf(result.name) != -1){
+            _setUserLocation(true)
+          } else {
+            _setUserLocation(false)
+          }
+        }
+    });
+  }, [])
+
+  
   
 
   return (
@@ -266,9 +278,16 @@ function App () {
       
       {/* 定位 */}
       <div className="card">
-        <h2 id="local">周边疫情</h2>
+        <h2 id="local">周边疫情
+        {
+          userLocation ? <small
+            onClick={() => _setUserLocation(false)}
+          >查看非湖北</small> : <small
+          onClick={() => _setUserLocation(true)}
+        >查看湖北</small>
+        }</h2>
       </div>
-      <iframe src="https://map.sogou.com/m/shouji4/page/emap/?_=0.8058073278712437" width="100%" height="500px" frameBorder="0"></iframe>
+      <iframe src={userLocation?"https://yqdt.jianguan.gov.cn/":"https://map.sogou.com/m/shouji4/page/emap/?_=0.8058073278712437"} width="100%" height="500px" frameBorder="0"></iframe>
       
       {/* 预测 */}
       <div className="card" id="Predict">
