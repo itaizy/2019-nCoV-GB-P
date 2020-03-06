@@ -1,166 +1,21 @@
-import React, { useState, Suspense, useEffect  } from 'react'
-import keyBy from 'lodash.keyby'
+import React, { Suspense, useState  } from 'react'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import all from './data/overall'
-import provinces from './data/area'
-import NavFab from "./component/NavFab"
 import predictData from './data/predictData'
-import hbdata from './data/hb4gb'
+import { PickerView, WhiteSpace,  } from 'antd-mobile';
 
-import Tag from './Tag'
-
-import Map from './Map'
+import 'antd-mobile/lib/picker-view/style/css';  
+import 'antd-mobile/lib/white-space/style/css';  
 
 import './App.css'
-import axios from 'axios'
-import TotalTag from "./TotalTag";
-// import { green, red } from '_ansi-colors@3.2.4@ansi-colors'
 
 dayjs.extend(relativeTime)
 
-// import Map from './Map'
-
 // const Map = React.lazy(() => import('./Map'))
 const Predict = React.lazy(() => import('./Predict'))
+const PredictMultiple = React.lazy(() => import('./PredictMultiple'))
 
-const provincesByName = keyBy(provinces, 'name')
-
-const fetcher = (url) => axios(url).then(data => {
-  return data.data.data
-})
-
-function New ({ title, summary, sourceUrl, pubDate, pubDateStr }) {
-  return (
-    <div className="new">
-      <div className="new-date">
-        <div className="relative">
-          {dayjs(pubDate).locale('zh-cn').fromNow()}
-        </div>
-        {dayjs(pubDate).format('YYYY-MM-DD HH:mm')}
-      </div>
-      <a className="title" href={sourceUrl}>{ title }</a>
-      <div className="summary">{ summary.slice(0, 100) }...</div>
-    </div>
-  )
-}
-
-function News ({ province }) {
-  const [len, setLen] = useState(8)
-  const [news, setNews] = useState([])
-
-  useEffect(() => {
-    fetcher(`https://file1.dxycdn.com/2020/0130/492/3393874921745912795-115.json?t=${46341925 + Math.random()}`).then(news => {
-      setNews(news)
-    })
-  }, [])
-
-  return (
-    <div className="card">
-      <h2 id="News">实时动态</h2>
-      {
-        news
-          .filter(n => province ? province.provinceShortName === (n.provinceName && n.provinceName.slice(0, 2)) : true)
-          .slice(0, len)
-          .map(n => <New {...n} key={n.id} />)
-      }
-      <div className="more" onClick={() => { setLen() }}>点击查看全部动态</div>
-    </div>
-  )
-}
-
-function Stat ({ modifyTime, confirmedCount, suspectedCount, deadCount, curedCount, name }) {
-  return (
-    <div>
-      <h3 id="Stas">
-        地域 {name ? `: ${name}` : ': 全国'}
-        <span className="due">
-          截止到: {dayjs(modifyTime).format('YYYY-MM-DD HH:mm')}
-        </span>
-      </h3>
-      <div className="row">
-        <Tag number={confirmedCount} className="numberconfirmed">
-          确诊
-        </Tag>
-        <Tag number={name=='湖北'?hbdata['suspected']:suspectedCount || '-'} className="number">
-          疑似
-        </Tag>
-        <Tag number={deadCount} className="dead">
-          死亡
-        </Tag>
-        <Tag number={curedCount} className="numbercured">
-          治愈
-        </Tag>
-      </div>
-    </div>
-  )
-}
-
-function StatIncr ({ modifyTime}) {
-  return (
-    <div className="card">
-      <h2 id="Incr">
-        实时数据
-        <span className="due">
-          截止时间: {dayjs(modifyTime).format('YYYY-MM-DD HH:mm')}
-        </span>
-      </h2>
-      <div className="row">
-        <TotalTag number={all.confirmedIncr} total={all.confirmedCount} className="numberconfirmed">
-          确诊
-        </TotalTag>
-        <TotalTag number={all.suspectedIncr || '-'}  total={all.suspectedCount} className="number">
-          疑似
-        </TotalTag>
-        <TotalTag number={all.seriousIncr} total={all.seriousCount} className="dead">
-          重症
-        </TotalTag>
-        <TotalTag number={all.deadIncr} total={all.deadCount} className="dead">
-          死亡
-        </TotalTag>
-        <TotalTag number={all.curedIncr} total={all.curedCount} className="numbercured">
-          治愈
-        </TotalTag>
-      </div>
-    </div>
-  )
-}
-
-function Area ({ area, onChange }) {
-  const renderArea = () => {
-    return area.map(x => (
-      <div className="province" key={x.name || x.cityName} onClick={() => {
-        // 表示在省一级
-        if (x.name) {
-          onChange(x)
-          // window.location.href = window.location.href + "#Map"
-          // setTimeout('window.location="#Map"',300)
-          document.getElementById('Map').scrollIntoView()
-        }
-      }}>
-        <div className={`area ${x.name ? 'active' : ''}`}>
-          { x.name || x.cityName }
-        </div>
-        <div className="confirmed">{ x.confirmedCount }</div>
-        <div className="death">{ x.deadCount }</div>
-        <div className="cured">{ x.curedCount }</div>
-      </div>
-    ))
-  }
-
-  return (
-    <>
-      <div className="province header">
-        <div className="area">地区</div>
-        <div className="confirmed">确诊</div>
-        <div className="death">死亡</div>
-        <div className="cured">治愈</div>
-      </div>
-      { renderArea() }
-    </>
-  )
-}
 
 function Header ({ province }) {
   return (
@@ -169,167 +24,491 @@ function Header ({ province }) {
   )
 }
 
+
 function App () {
-  const [province, _setProvince] = useState(provincesByName['湖北'])
-  const [userLocation, _setUserLocation] = useState(true)
 
-  useEffect(() => {
-    if (province) {
-      // window.document.title = `新冠疫情实时地图 | ${province.name}`
-      window.document.title = `实时地图`
+  const [sp, setSP] = useState(['全国'])
+
+  const province = '湖北'
+  const season = [
+    {
+      label: '全国',
+      value: '全国',
+      children: [
+        {label:'新增确诊+新增出院',value:'新增确诊+新增出院'},
+        {label:'新增确诊',value:'新增确诊'},
+        {label:'现有确诊+现有疑似+现有重症',value:'现有确诊+现有疑似+现有重症'},
+        {label:'现有确诊+累计出院+现有重症',value:'现有确诊+累计出院+现有重症'},
+        {label:'累计确诊+累计出院+累计死亡',value:'累计确诊+累计出院+累计死亡'},
+      ],
+    },
+    {
+      label: '全国除湖北',
+      value: '全国除湖北',
+      children: [
+        {label:'新增确诊+新增出院',value:'新增确诊+新增出院'},
+        {label:'新增确诊',value:'新增确诊'},
+        {label:'现有确诊+现有疑似+现有重症',value:'现有确诊+现有疑似+现有重症'},
+        {label:'现有确诊+累计出院+现有重症',value:'现有确诊+累计出院+现有重症'},
+        {label:'累计确诊+累计出院+累计死亡',value:'累计确诊+累计出院+累计死亡'},
+      ],
+    },
+    {
+      label: '湖北',
+      value: '湖北',
+      children: [
+        {label:'新增确诊+新增出院',value:'新增确诊+新增出院'},
+        {label:'新增确诊',value:'新增确诊'},
+        {label:'现有确诊+现有疑似+现有重症',value:'现有确诊+现有疑似+现有重症'},
+        {label:'现有确诊+累计出院+现有重症',value:'现有确诊+累计出院+现有重症'},
+        {label:'累计确诊+累计出院+累计死亡',value:'累计确诊+累计出院+累计死亡'},
+      ],
+    },
+    {
+      label: '湖北除武汉',
+      value: '湖北除武汉',
+      children: [
+        {label:'新增确诊+新增出院',value:'新增确诊+新增出院'},
+        {label:'新增确诊',value:'新增确诊'},
+        {label:'现有确诊+现有疑似+现有重症',value:'现有确诊+现有疑似+现有重症'},
+        {label:'现有确诊+累计出院+现有重症',value:'现有确诊+累计出院+现有重症'},
+        {label:'累计确诊+累计出院+累计死亡',value:'累计确诊+累计出院+累计死亡'},
+      ],
     }
-  }, [province])
+    ,
+    {
+      label: '武汉',
+      value: '武汉',
+      children: [
+        {label:'新增确诊+新增出院',value:'新增确诊+新增出院'},
+        {label:'新增确诊',value:'新增确诊'},
+        {label:'现有确诊+现有疑似+现有重症',value:'现有确诊+现有疑似+现有重症'},
+        {label:'现有确诊+累计出院+现有重症',value:'现有确诊+累计出院+现有重症'},
+        {label:'累计确诊+累计出院+累计死亡',value:'累计确诊+累计出院+累计死亡'},
+      ],
+    }
+  ];
 
-  const setProvince = (p) => {
-    _setProvince(p)
-    window.history.pushState(null, null, p ? p.pinyin : '/')
-  }
+  const dataselect = [
+    {
+      label: '全国', value: '全国',
+    },
+    {
+      label: '全国除湖北', value: '全国除湖北',
+    },
+    {
+      label: '湖北', value: '湖北',
+    },
+    {
+      label: '湖北除武汉', value: '湖北除武汉',
+    },
+    {
+      label: '武汉', value: '武汉',
+    },
+  ]
 
-  const data = !province ? provinces.map(p => ({
-    name: p.provinceShortName,
-    value: p.confirmedCount
-  })) : provincesByName[province.name].cities.map(city => ({
-    name: city.fullCityName,
-    value: city.confirmedCount
-  }))
-
-  const area = province ? provincesByName[province.name].cities : provinces
-  const overall = province ? province : all
-
-
-  const citylist = ['武汉市','黄石市','十堰市','宜昌市','襄阳市','鄂州市','荆门市','孝感市','荆州市','黄冈市','咸宁市','随州市','恩施土家族苗族自治州仙桃市','潜江市','天门市','神农架林区']
-
-  useEffect(() => {
-    const BMap = window.BMap;
-    const myCity = new BMap.LocalCity();
-
-    myCity.get(function (result) {
-      // console.log(result.name);          //城市名称
-        if (result.name) {
-          if (citylist.indexOf(result.name) != -1){
-            _setUserLocation(true)
-          } else {
-            _setUserLocation(false)
-          }
-        }
-    });
-  }, [])
-
-  
-  
+  const datasource = {
+      '全国':  [
+          '新增确诊',
+          '新增确诊+新增出院',
+          '现有确诊+现有疑似+现有重症',
+          '现有确诊+累计出院+现有重症',
+          '累计确诊+累计出院+累计死亡',
+        ],
+      '全国除湖北': [
+          '新增确诊',
+          '新增确诊+新增出院',
+          '现有确诊+现有疑似+现有重症',
+          '现有确诊+累计出院+现有重症',
+          '累计确诊+累计出院+累计死亡',
+        ],
+      '湖北': [
+          '新增确诊',
+          '新增确诊+新增出院',
+          '现有确诊+现有疑似+现有重症',
+          '现有确诊+累计出院+现有重症',
+          '累计确诊+累计出院+累计死亡',
+        ],
+      '湖北除武汉': [
+          '新增确诊',
+          '新增确诊+新增出院',
+          '现有确诊+现有疑似+现有重症',
+          '现有确诊+累计出院+现有重症',
+          '累计确诊+累计出院+累计死亡',
+        ],
+      '武汉': [
+          '新增确诊',
+          '新增确诊+新增出院',
+          '现有确诊+现有疑似+现有重症',
+          '现有确诊+累计出院+现有重症',
+          '累计确诊+累计出院+累计死亡',
+        ],
+      }
 
   return (
     <div>
       <Header province={province} />
       {/* 实时数据 */}
-      <StatIncr modifyTime={all.modifyTime}/> 
-
-        {/* 地图 */}
-        <div className="card" id="Map">
-        <h2>疫情地图 { province ? `· ${province.name}` : "(点击省市查看详情)" }
-        {
-          province ? <small
-            onClick={() => setProvince(null)}
-          >返回全国</small> : null
-        }
-        </h2>
-        {/* <h3>点击省市查看详情</h3> */}
-        <Stat { ...overall } name={province && province.name} modifyTime={all.modifyTime} />
-        {/* <Suspense fallback={<div className="loading">地图正在加载中...</div>}> */}
-          <Map province={province} data={data} onClick={name => {
-            const p = provincesByName[name]
-            if (p) {
-              setProvince(p)
-            }
-          }} />
-        {/* </Suspense> */}
-        <Area area={area} onChange={setProvince} />
+      <div className="card" id='Trends'>
+      <PickerView
+          data={dataselect}
+          onChange={(v) => {console.log(v); setSP(v)}}
+          value={sp}
+          // cascade={false}
+          cols={1}
+      />
       </div>
+      <div>
+      {
 
-      {/* 趋势 */}
-        <div className="card" id='Trends'>
-        <h2>全国</h2>
-            {all.quanguoTrendChart.map(n => (              
-              <div key={n.title}>
-                <img src={require('./images/' + n.imgUrl.split('/')[n.imgUrl.split('/').length - 1])}
-                     alt=""
-                    //  style={{ width: '100%', verticalAlign: 'top' }}
-                     style={{ width: '100%'}}
-                     onLoad={() => {
-                         // fire window resize event to change height
-                         window.dispatchEvent(new Event('resize'));
-                     }}/>
-              </div>))}
-          <h2>湖北/非湖北</h2>
-            {all.hbFeiHbTrendChart.map(n => (
-              <div key={n.title}>
-                <img src={require('./images/' + n.imgUrl.split('/')[n.imgUrl.split('/').length - 1])}
-                     alt=""
-                    //  style={{ width: '100%', verticalAlign: 'top' }}
-                     style={{ width: '100%'}}
-                     onLoad={() => {
-                         // fire window resize event to change height
-                         window.dispatchEvent(new Event('resize'));
-                     }}/>
-                     </div>))}
-                     </div>
-        {/* </Carousel> */}
-      {/* </WingBlank> */}
+datasource[sp].map((v) => 
+ <div className="card" id='Trends' key={v}>
+        <h2>{v}</h2>
+        <WhiteSpace />
+        <WhiteSpace />
+        <div>
+          <img src={require('./images/' + sp + '_' + v + '_02-14_03-29.png')}
+                alt=""
+              //  style={{ width: '100%', verticalAlign: 'top' }}
+                style={{ width: '100%'}}
+                onLoad={() => {
+                    // fire window resize event to change height
+                    window.dispatchEvent(new Event('resize'));
+                }}/>
+        </div> 
+        </div>
+
+)
       
-      {/* 定位 */}
-      <div className="card">
-        <h2 id="local">周边疫情
-        {
-          userLocation ? <small
-            onClick={() => _setUserLocation(false)}
-          >查看非湖北</small> : <small
-          onClick={() => _setUserLocation(true)}
-        >查看湖北</small>
-        }</h2>
+      }
       </div>
-      <iframe src={userLocation?"https://yqdt.jianguan.gov.cn/":"https://map.sogou.com/m/shouji4/page/emap/?_=0.8058073278712437"} width="100%" height="500px" frameBorder="0"></iframe>
       
+      {/* </div> */}
+      
+      {/* <div className="card" id='Trends'>
+        <h2>湖北趋势</h2>
+        <div>
+          <img src={require('./images/hbp.png')}
+                alt=""
+              //  style={{ width: '100%', verticalAlign: 'top' }}
+                style={{ width: '100%'}}
+                onLoad={() => {
+                    // fire window resize event to change height
+                    window.dispatchEvent(new Event('resize'));
+                }}/>
+        </div>
+      </div>
+      <div className="card" id='Trends'>
+        <h2>全国趋势</h2>
+        <div>
+          <img src={require('./images/allp.png')}
+                alt=""
+              //  style={{ width: '100%', verticalAlign: 'top' }}
+                style={{ width: '100%'}}
+                onLoad={() => {
+                    // fire window resize event to change height
+                    window.dispatchEvent(new Event('resize'));
+                }}/>
+        </div>
+      </div> */}
+
+
       {/* 预测 */}
+      {/* <div className="card" id='Trends'>
+        <h2>武汉：新增确诊+新增治愈趋势预测</h2>
+        <div>
+          <img src={require('./images/wuhan.png')}
+                alt=""
+              //  style={{ width: '100%', verticalAlign: 'top' }}
+                style={{ width: '100%'}}
+                onLoad={() => {
+                    // fire window resize event to change height
+                    window.dispatchEvent(new Event('resize'));
+                }}/>
+        </div>
+        <div style={{border:'1px solid #000'}}>
+            <p className="title">
+              &nbsp;&nbsp;&nbsp;&nbsp;武汉治愈人数近期不断增加，显示了治愈能力不断提高，随着确诊人数的不断下降，治愈数量将于三月中旬趋于平缓。
+            </p>
+        </div>
+      </div> */}
+      {/* <div className="card" id='Trends'>
+        <h2>武汉治愈趋势预测</h2>
+        <div>
+          <img src={require('./images/wuhan-c.png')}
+                alt=""
+              //  style={{ width: '100%', verticalAlign: 'top' }}
+                style={{ width: '100%'}}
+                onLoad={() => {
+                    // fire window resize event to change height
+                    window.dispatchEvent(new Event('resize'));
+                }}/>
+        </div>
+        <div style={{border:'1px solid #000'}}>
+            <p className="title">
+              &nbsp;&nbsp;&nbsp;&nbsp;武汉治愈人数近期不断增加，显示了治愈能力不断提高；随着确诊人数的不断下降，治愈数量将于三月中旬开始趋于平缓，四月初期进一步稳定。
+            </p>
+        </div>
+      </div>
+      <div className="card" id='Trends'>
+        <h2>湖北（除武汉）治愈趋势预测</h2>
+        <div>
+          <img src={require('./images/hbewh.jpg')}
+                alt=""
+              //  style={{ width: '100%', verticalAlign: 'top' }}
+                style={{ width: '100%'}}
+                onLoad={() => {
+                    // fire window resize event to change height
+                    window.dispatchEvent(new Event('resize'));
+                }}/>
+        </div>
+        <div style={{border:'1px solid #000'}}>
+            <p className="title">
+              &nbsp;&nbsp;&nbsp;&nbsp;湖北（不包括武汉）的治愈人数随着确诊人数的不断下降，将于三月上旬趋于平缓，三月中旬进一步稳定。
+            </p>
+        </div>
+      </div>
+      <div className="card" id='Trends'>
+        <h2>全国（除湖北）治愈趋势预测</h2>
+        <div>
+          <img src={require('./images/allehb.jpg')}
+                alt=""
+              //  style={{ width: '100%', verticalAlign: 'top' }}
+                style={{ width: '100%'}}
+                onLoad={() => {
+                    // fire window resize event to change height
+                    window.dispatchEvent(new Event('resize'));
+                }}/>
+        </div>
+        <div style={{border:'1px solid #000'}}>
+            <p className="title">
+              &nbsp;&nbsp;&nbsp;&nbsp;全国（不包括湖北）的治愈人数随着确诊人数的不断下降，将于三月上旬趋于平缓，三月中旬进一步稳定。
+            </p>
+        </div>
+      </div>
+      <div className="card" id='Trends'>
+        <h2>全国治愈趋势预测</h2>
+        <div>
+          <img src={require('./images/all.jpg')}
+                alt=""
+              //  style={{ width: '100%', verticalAlign: 'top' }}
+                style={{ width: '100%'}}
+                onLoad={() => {
+                    // fire window resize event to change height
+                    window.dispatchEvent(new Event('resize'));
+                }}/>
+        </div>
+        <div style={{border:'1px solid #000'}}>
+            <p className="title">
+              &nbsp;&nbsp;&nbsp;&nbsp;全国的治愈人数随着确诊人数的不断下降，将于三月下旬开始趋于平缓，四月中旬进一步稳定。
+            </p>
+        </div>
+      </div> */}
       <div className="card" id="Predict">
-        <h2> 疫情预测（确诊趋势）· 近期</h2>
-        <div height="250px">
+        {/* <h2> 确诊</h2> */}
+
+        {/* <div height="500px">
+          <Suspense fallback={<div className="loading">正在加载中...</div>}>
+            <PredictMultiple data={{
+              // "title": "确诊",
+              "xAxis": predictData.confirmd_now_xAxis, 
+              "yAxis": [
+                {
+                  "legend": "武汉上限", 
+                  "type": "predict",
+                  "data": predictData.confirmd_now_wuhan_predict_up,
+                },
+                // {
+                //   "legend": "湖北上限", 
+                //   "type": "predict",
+                //   "data": predictData.confirmd_now_hubei_predict_up,
+                // },
+                // {
+                //   "legend": "全国上限", 
+                //   "type": "predict",
+                //   "data": predictData.confirmd_now_all_predict_up,
+                // },
+                {
+                  "legend": "武汉下限", 
+                  "type": "predict",
+                  "data": predictData.confirmd_now_wuhan_predict_down,
+                },
+                // {
+                //   "legend": "湖北下限", 
+                //   "type": "predict",
+                //   "data": predictData.confirmd_now_hubei_predict_down,
+                // },
+                // {
+                //   "legend": "全国下限", 
+                //   "type": "predict",
+                //   "data": predictData.confirmd_now_all_predict_down,
+                // },
+                {
+                  "legend": "武汉", 
+                  "type": "true",
+                  "data": predictData.confirmd_now_wuhan,
+                },
+                // {
+                //   "legend": "湖北", 
+                //   "type": "true",
+                //   "data": predictData.confirmd_now_hubei,
+                // },
+                // {
+                //   "legend": "全国", 
+                //   "type": "true",
+                //   "data": predictData.confirmd_now_all,
+                // },
+                // {
+                //   "legend": "湖北", 
+                //   "type": "predict",
+                //   "data": predictData.confirmd_hubei_predict,
+                // },
+                // {
+                //   "legend": "湖北", 
+                //   "type": "true",
+                //   "data": predictData.confirmd_hubei,
+                // },
+                // {
+                //   "legend": "全国", 
+                //   "type": "predict",
+                //   "data": predictData.confirmd_all_predict,
+                // },
+                // {
+                //   "legend": "全国", 
+                //   "type": "true",
+                //   "data": predictData.confirmd_all,
+                // },
+              ]
+              }}/>
+          </Suspense>
+        </div> */}
+      </div>
+      {/* <div className="card" id="Predict"></div>
+        <h2> 疑似</h2>
+        <div height="500px">
         <Suspense fallback={<div className="loading">正在加载中...</div>}>
-          <Predict data={{"legend": ["武汉", "武汉趋势"], "xAxis": predictData.xAxis, "predict": predictData.wuhan, "truedata": predictData.wuhan_t}} onClick={() => {alert('仅供参考')}} />
-          <Predict data={{"legend": ["湖北（不含武汉）", "湖北（不含武汉）趋势"], "xAxis": predictData.xAxis, "predict": predictData.hubei, "truedata": predictData.hubei_t}} onClick={() => {alert('仅供参考')}} />
-          <Predict data={{"legend": ["北上广", "北上广趋势"], "xAxis": predictData.xAxis, "predict": predictData.bsg, "truedata": predictData.bsg_t}} onClick={() => {alert('仅供参考')}} />
-          <Predict data={{"legend": ["全国（不含湖北）", "全国（不含湖北）趋势"], "xAxis": predictData.xAxis, "predict": predictData.all, "truedata": predictData.all_t}} onClick={() => {alert('仅供参考')}} />
+          <PredictMultiple data={{
+            // "title": "确诊",
+            "xAxis": predictData.suspected_xAxis, 
+            "yAxis": [
+              {
+                "legend": "武汉", 
+                "type": "predict",
+                "data": predictData.suspected_wuhan_predict,
+              },
+              {
+                "legend": "武汉", 
+                "type": "true",
+                "data": predictData.suspected_wuhan,
+              },
+              {
+                "legend": "湖北", 
+                "type": "predict",
+                "data": predictData.suspected_hubei_predict,
+              },
+              {
+                "legend": "湖北", 
+                "type": "true",
+                "data": predictData.suspected_hubei,
+              },
+              {
+                "legend": "全国", 
+                "type": "predict",
+                "data": predictData.suspected_all_predict,
+              },
+              {
+                "legend": "全国", 
+                "type": "true",
+                "data": predictData.suspected_all,
+              },
+            ]
+            }}/>
         </Suspense>
         </div>
-        <h2> 疫情预测（确诊趋势）· 长期</h2>
-        <div>
-          <img src={require('./images/p_bsg.png')} alt="" style={{ width: '100%'}}
-                     onLoad={() => {
-                         window.dispatchEvent(new Event('resize'));
-                     }}/>
-                     </div>
-        <div>
-          <img src={require('./images/p_all.png')} alt="" style={{ width: '100%'}}
-                     onLoad={() => {
-                         window.dispatchEvent(new Event('resize'));
-                     }}/>
-                     </div>
-        <div>
-          <img src={require('./images/p_hb.png')} alt="" style={{ width: '100%'}}
-                     onLoad={() => {
-                         window.dispatchEvent(new Event('resize'));
-                     }}/>
-                     </div>
-        <div>
-          <img src={require('./images/p_wh.png')} alt="" style={{ width: '100%'}}
-                     onLoad={() => {
-                         window.dispatchEvent(new Event('resize'));
-                     }}/>
-                     </div>
-      </div>
-      
-      {/* 动态 */}
-      <News province={province} />
-      <NavFab/>
+        <h2> 治愈</h2>
+        <div height="500px">
+        <Suspense fallback={<div className="loading">正在加载中...</div>}>
+          <PredictMultiple data={{
+            // "title": "确诊",
+            "xAxis": predictData.cured_xAxis, 
+            "yAxis": [
+              {
+                "legend": "武汉", 
+                "type": "predict",
+                "data": predictData.cured_wuhan_predict,
+              },
+              {
+                "legend": "武汉", 
+                "type": "true",
+                "data": predictData.cured_wuhan,
+              },
+              {
+                "legend": "湖北", 
+                "type": "predict",
+                "data": predictData.cured_hubei_predict,
+              },
+              {
+                "legend": "湖北", 
+                "type": "true",
+                "data": predictData.cured_hubei,
+              },
+              {
+                "legend": "全国", 
+                "type": "predict",
+                "data": predictData.cured_all_predict,
+              },
+              {
+                "legend": "全国", 
+                "type": "true",
+                "data": predictData.cured_all,
+              },
+            ]
+            }}/>
+        </Suspense>
+        </div>
+        <h2> 重症</h2>
+        <div height="500px">
+        <Suspense fallback={<div className="loading">正在加载中...</div>}>
+          <PredictMultiple data={{
+            // "title": "确诊",
+            "xAxis": predictData.serious_xAxis, 
+            "yAxis": [
+              {
+                "legend": "武汉", 
+                "type": "predict",
+                "data": predictData.serious_wuhan_predict,
+              },
+              {
+                "legend": "武汉", 
+                "type": "true",
+                "data": predictData.serious_wuhan,
+              },
+              {
+                "legend": "湖北", 
+                "type": "predict",
+                "data": predictData.serious_hubei_predict,
+              },
+              {
+                "legend": "湖北", 
+                "type": "true",
+                "data": predictData.serious_hubei,
+              },
+              {
+                "legend": "全国", 
+                "type": "predict",
+                "data": predictData.serious_all_predict,
+              },
+              {
+                "legend": "全国", 
+                "type": "true",
+                "data": predictData.serious_all,
+              },
+            ]
+            }}/>
+        </Suspense>
+        </div> */}
+      {/* <NavFab/> */}
+      {/* </div> */}
     </div>
   );
 }
